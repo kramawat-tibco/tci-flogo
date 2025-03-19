@@ -1,27 +1,27 @@
-# Oracle app Deployment and Execution in Docker container and Kubernetes Cluster.
+# Deploy and Run Flogo Oracle DB app in Docker Container and K8s Cluster.
 
 
 ## Description
 
-This example demonstrates how we can deploy and run Oracle app in Docker and Kubernetes Cluster.
-Oracle app need runtime oracle client libraries to execute app. We have created Docker file which install those libraries. 
+This example demonstrates how we can deploy and run Flogo Oracle DB app in Docker and K8s Cluster.
+Flogo Oracle DB app need runtime oracle client libraries to run app. In the attached Docker file, we are installing the runtime dependencies for Flogo oracle DB app. 
 
 The main purpose of this sample is:
-* To deploy oracle app in Docker container and execute in the same.
-* To execute already deployed app in kuburnetes cluster.
+* To deploy and run the Flogo oracle DB app in a docker container.
+* To run Flogo Oracle DB app in K8s cluster.
 
 ## Prerequisites
 
-1. Ensure that docker and minikube must be install on local computer .
-3. In order to deploy and run Oracle app make sure Oracle app, Docker file and deployment.yml file should be present at same location.
+1. Ensure that docker and Minikube cluster is up and running. here will be using minikube as the local Kubernetes (K8s) cluster for deploying and managing applications.
+3. In order to deploy and run Flogo Oracle DB app make sure Docker file, deployment.yml file and Flogo Oracle DB app binary should be present at same location.
 
-## Deploying and Executing Oracle app in Docker container
+## Deploy and Run Flogo Oracle DB app in a docker container
 
-1. Create a folder and place your Oracle app and Docker file in it.
+1. Create a folder and place your Flogo Oracle DB app and Docker file in it.
 
 2. Now open terminal from this location.
 
-3. Build oracle app using below command:
+3. Build Flogo Oracle DB app using below command:
     
     `docker build -t  oracle-app .`
 
@@ -29,7 +29,7 @@ The main purpose of this sample is:
     
     > **Note:** There is a dot (.) at the end of the command which is required as an argument.
 
-    ![Build oracle app in docker](../../../import-screenshots/OracleDatabase/33.png)
+    ![Build Flogo Oracle DB app in docker](../../../import-screenshots/OracleDatabase/33.png)
 
 4. Check for oracle-app image is created or not using below command:
     
@@ -41,9 +41,9 @@ The main purpose of this sample is:
     
     `docker run -i -t -p 9999:9999 oracle-app`
 
-    Here above command exposes port 9999 on the host machine, forwarding it to port 9999 inside the container.
+    Here above command maps port 9999 on the host machine to port 9999 within the oracle-app container.
 
-    ![Run oracle app](../../../import-screenshots/OracleDatabase/35.png)
+    ![Run Flogo Oracle DB app](../../../import-screenshots/OracleDatabase/35.png)
 
 6. Hit below curl command to get output: 
     
@@ -59,7 +59,7 @@ The main purpose of this sample is:
 
     > **eg:** docker logs 645562ba2fc3
 
-    ![Oracle app logs](../../../import-screenshots/OracleDatabase/37.png)
+    ![Flogo Oracle DB app logs](../../../import-screenshots/OracleDatabase/37.png)
 
 8. Check running container using below command:
     
@@ -68,9 +68,9 @@ The main purpose of this sample is:
     ![Verify running conatainer](../../../import-screenshots/OracleDatabase/38.png)
   
 
-## Deploying and Executing Oracle app in Kubernetes Cluster
+## Deploy and Run Flogo Oracle DB app in K8s Cluster
 
-1. Use image name and tag which is get created after building above oracle app eg. oracle-app:latest and Update your deployment.yml file accordingly.
+1. Use image name and tag which gets created after building above Flogo Oracle DB app eg. oracle-app:latest and Update your deployment.yml file accordingly.
 
 2. Load above created image into minikube using below command:
   
@@ -82,7 +82,11 @@ The main purpose of this sample is:
 
     ![Image is loaded into minikube and verify into list](../../../import-screenshots/OracleDatabase/39.png)
 
-4. Apply updated deployment.yml file changes using below command:
+4. User need to run below command for docker to point to the minikube:
+
+    `eval $(minikube docker-env)`
+
+5. Apply updated deployment.yml file changes using below command:
   
     `kubectl apply -f deployment.yaml`
 
@@ -90,17 +94,17 @@ The main purpose of this sample is:
 
     ![Create or update yaml file and verify pod is created](../../../import-screenshots/OracleDatabase/40.png)
 
-5. Check pods using below command:
+6. Check pods using below command:
     
     `kubectl get pods`
 
-6. Check logs using below command:
+7. Check logs using below command:
     
     `kubectl logs <podname>`
     
       > **eg:** kubectl logs oracleapp-deployment-7889cff7-2fsjh
 
-7. Forward port to access your app locally on the same port using below command:
+8. Forward port to access your app locally on the same port using below command:
     
     `kubectl port-forward <podname> 9999:9999`
     
@@ -108,19 +112,19 @@ The main purpose of this sample is:
 
     ![Port forward to 9999](../../../import-screenshots/OracleDatabase/41.png)
 
-8. Hit below curl command to get output: 
+9. Hit below curl command to get output: 
     
     `curl http://localhost:9999/orcl`
 
     ![Curl output](../../../import-screenshots/OracleDatabase/42.png)  
 
-9. Again Check logs using below command:
+10. Again Check logs using below command:
     
     `kubectl logs <podname>`
 
     ![Verify app logs](../../../import-screenshots/OracleDatabase/43.png)
 
-10. You ca scale down the app using below command:
+11. You ca scale down the app using below command:
     
     `kubectl scale deploy <deployment-metadata-name> --replicas=0`
     
@@ -247,8 +251,8 @@ In the Dockerfile,
       spec:
         containers:
           - name: oracleapp1-container
-            image: docker.io/library/oracle-app1:latest  # Replace with your image
-            imagePullPolicy: Never
+            image: oracle-app1:latest  # Replace with your image
+            imagePullPolicy: IfNotPresent
             ports:
               - containerPort: 9999  # Replace with your app's exposed port
             env:
@@ -263,7 +267,7 @@ In the Dockerfile,
   * spec.containers: Describes the container(s) that will be deployed inside the pod:
     * name: The container's name is oracleapp1-container.
     * image: Specifies the Docker image to use, here it is docker.io/library/oracle-app1:latest. This should be replaced with your actual image if different.
-    * imagePullPolicy: Set to Never, which means the image will never be pulled from the registry, and Kubernetes assumes it's already available on the node.
+    * imagePullPolicy: Set to IfNotPresent, which means that Kubernetes will only pull the image from the container registry if the image is not already present on the node. If the image is already cached locally on the node (i.e., the same version is already present), Kubernetes will not pull it again and will use the locally cached image instead.
     * ports: The container exposes port 9999, which should match the port your application listens to.
     * env: Defines environment variables for the container:
       * LD_LIBRARY_PATH: Points to the Oracle Instant Client location.
@@ -285,12 +289,12 @@ In the Dockerfile,
 ## Troubleshooting
 
 * If you see error like: `Cannot locate a 64-bit Oracle Client library: "libclntsh.so: cannot open shared object file: No such file or directory"` then make sure that your docker file installed oracle client libraries successfully
-* If you see error like: `couldn't get current server API group list: Get "https://172.24.206.179:8443/api?timeout=32s": dial tcp 172.24.206.179:8443: connectex: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.` then make sure that your Kubernetes cluster is running. If you're using a local setup (like Minikube or Docker Desktop), ensure that the Kubernetes service is started and healthy. 
+* If you see error like: `couldn't get current server API group list: Get "https://172.24.206.179:8443/api?timeout=32s": dial tcp 172.24.206.179:8443: connectex: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.` then make sure that your minikube cluster is up and running. If you're using a local setup (like Minikube or Docker Desktop), ensure that the Kubernetes service is started and healthy. 
 
 ## Contributing
 If you want to build your own activities for Flogo please read the docs here.
 
-If you want to showcase your project, check out [tci-awesome](https://github.com/TIBCOSoftware/tci-awesome)
+If you want to showcase your project, check out [tci-awesome]
 
 You can also send an email to `tci@tibco.com`
 
