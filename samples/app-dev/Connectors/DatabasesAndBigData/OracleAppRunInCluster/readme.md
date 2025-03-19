@@ -27,13 +27,13 @@ b) To execute already deployed app in kuburnetes cluster.
     Here docker reads the Dockerfile to create an image and tags it with the name oracle-app.
     Note: There is a dot (.) at the end of the command which is required as an argument.
 
-![Build oracle app in docker](../../../import-screenshots/OracleDatabase/33.png)
+    ![Build oracle app in docker](../../../import-screenshots/OracleDatabase/33.png)
 
 4. Check for oracle-app image is created or not using below command:
     
     `docker images`
 
-![Verify image created](../../../import-screenshots/OracleDatabase/34.png)
+    ![Verify image created](../../../import-screenshots/OracleDatabase/34.png)
 
 5. Run oracle-app docker image using below command:
     
@@ -41,7 +41,7 @@ b) To execute already deployed app in kuburnetes cluster.
 
     Here above command exposes port 9999 on the host machine, forwarding it to port 9999 inside the container.
 
-![Run oracle app](../../../import-screenshots/OracleDatabase/35.png)
+    ![Run oracle app](../../../import-screenshots/OracleDatabase/35.png)
 
 6. Hit below curl command to get output: 
     
@@ -49,19 +49,19 @@ b) To execute already deployed app in kuburnetes cluster.
 
     Here above command sends an HTTP request to your local machine (localhost) on port 9999, requesting the /orcl endpoint.
 
-![Curl output](../../../import-screenshots/OracleDatabase/36.png)
+    ![Curl output](../../../import-screenshots/OracleDatabase/36.png)
 
 7. Check oracle-app logs using below command:
     
     `docker logs <<CONTAINER_ID>>`
 
-![Oracle app logs](../../../import-screenshots/OracleDatabase/37.png)
+    ![Oracle app logs](../../../import-screenshots/OracleDatabase/37.png)
 
 8. Check running container using below command:
     
     `docker ps -a`
 
-![Verify running conatainer](../../../import-screenshots/OracleDatabase/38.png)
+    ![Verify running conatainer](../../../import-screenshots/OracleDatabase/38.png)
   
 
 ## Deploying and Executing Oracle app in Kubernetes Cluster
@@ -76,7 +76,7 @@ b) To execute already deployed app in kuburnetes cluster.
     
     `minikube image list`
 
-![Image is loaded into minikube and verify into list](../../../import-screenshots/OracleDatabase/39.png)
+    ![Image is loaded into minikube and verify into list](../../../import-screenshots/OracleDatabase/39.png)
 
 4. Apply updated deployment.yml file changes using below command:
   
@@ -84,7 +84,7 @@ b) To execute already deployed app in kuburnetes cluster.
 
     Here above command tells Kubernetes to create or update resources based on the configurations defined in the deployment.yaml file.
 
-![Create or update yaml file and verify pod is created](../../../import-screenshots/OracleDatabase/40.png)
+    ![Create or update yaml file and verify pod is created](../../../import-screenshots/OracleDatabase/40.png)
 
 5. Check pods using below command:
     
@@ -94,35 +94,35 @@ b) To execute already deployed app in kuburnetes cluster.
     
     `kubectl logs <podname>`
     
-    eg: kubectl logs oracleapp-deployment-7889cff7-2fsjh
+      eg: kubectl logs oracleapp-deployment-7889cff7-2fsjh
 
 7. Forward port to access your app locally on the same port using below command:
     
     `kubectl port-forward <podname> 9999:9999`
     
-    eg: kubectl port-forward oracleapp-deployment-7889cff7-2fsjh 9999:9999
+      eg: kubectl port-forward oracleapp-deployment-7889cff7-2fsjh 9999:9999
 
-![Port forward to 9999](../../../import-screenshots/OracleDatabase/41.png)
+    ![Port forward to 9999](../../../import-screenshots/OracleDatabase/41.png)
 
 8. Hit below curl command to get output: 
     
     `curl http://localhost:9999/orcl`
 
-![Curl output](../../../import-screenshots/OracleDatabase/42.png)  
+    ![Curl output](../../../import-screenshots/OracleDatabase/42.png)  
 
 9. Again Check logs using below command:
     
     `kubectl logs <podname>`
 
-![Verify app logs](../../../import-screenshots/OracleDatabase/43.png)
+    ![Verify app logs](../../../import-screenshots/OracleDatabase/43.png)
 
 10. You ca scale down the app using below command:
     
     `kubectl scale deploy <deployment-metadata-name> --replicas=0`
     
-    eg:kubectl scale deploy oracleapp1-deployment --replicas=0
+      eg:kubectl scale deploy oracleapp1-deployment --replicas=0
 
-![Sacle down app](../../../import-screenshots/OracleDatabase/44.png)
+    ![Sacle down app](../../../import-screenshots/OracleDatabase/44.png)
 
 
 ## Understanding Dockerfile and deployment.yaml file configuration
@@ -132,48 +132,58 @@ b) To execute already deployed app in kuburnetes cluster.
 In the Dockerfile,
 1. Base Image:
     
-    `FROM alpine:latest`
+    ```dockerfile
+    FROM alpine:latest
+    ```
 
     This Uses Alpine Linux as the base image.
 
 2. Install Dependencies:
     
-    `RUN apk add --no-cache ca-certificates libaio bash curl unzip \ && mkdir -p /opt/oracle \ && apk add gcompat`
+    ```dockerfile
+    RUN apk add --no-cache ca-certificates libaio bash curl unzip \
+      && mkdir -p /opt/oracle \
+      && apk add gcompat
+    ```
 
     This Installs necessary tools (SSL certificates, libraries, bash, curl, unzip, gcompat) to support Oracle Instant Client and the Flogo app.
     After installing these dependencies, it creates a directory /opt/oracle for Oracle files using mkdir -p /opt/oracle.
 
 3. Download and Install Oracle Instant Client:  
-    ```WORKDIR /opt/oracle```
+    
+    ```dockerfile
+    WORKDIR /opt/oracle
+    RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2113000/instantclient-basic-linux.x64-21.13.0.0.0dbru.zip \
+      && unzip instantclient-basic-linux.x64-21.13.0.0.0dbru.zip \
+      && rm instantclient-basic-linux.x64-21.13.0.0.0dbru.zip
+    ```
 
-    ```RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2113000/instantclient-basic-linux.x64-21.13.0.0.0dbru.zip \```
-    
-      ```&& unzip instantclient-basic-linux.x64-21.13.0.0.0dbru.zip \```
-    
-      ```&& rm instantclient-basic-linux.x64-21.13.0.0.0dbru.zip```
-    
     It downloads and installs Oracle Instant Client into /opt/oracle.
 
 
 4. Set Environment Variables:
   
-    ```ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_21_13"```
-    
-    ```ENV PATH="/opt/oracle/instantclient_21_13:$PATH"```
+    ```dockerfile
+    ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_21_13"
+    ENV PATH="/opt/oracle/instantclient_21_13:$PATH"
+    ```
 
     It Configures LD_LIBRARY_PATH and PATH to point to the Oracle Instant Client.
 
 5. Set Working Directory and Add Flogo App:
     
-    ```WORKDIR /app```
-
-    ```ADD oracleapp /app/flogoapp```
+    ```dockerfile
+    WORKDIR /app
+    ADD oracleapp /app/flogoapp
+    ```
 
     Copies the application files from the host machine to the container.
 
 6. Set Entrypoint:
     
-    `CMD ["/app/flogoapp"]`
+    ```dockerfile
+    CMD ["/app/flogoapp"]
+    ```
 
     Defines the default command to run the Flogo application when the container starts.
  
@@ -182,13 +192,17 @@ In the Dockerfile,
 
 1. apiVersion:
     
-    `apiVersion: apps/v1`
+    ```yaml
+    apiVersion: apps/v1
+    ```
   
     This specifies the version of the Kubernetes API you're using to create the deployment. Here it is set to apps/v1, which is standard for deployments.
 
 2. kind:
     
-    `kind: Deployment`
+    ```yaml
+    kind: Deployment
+    ```
     
     This defines the kind of Kubernetes resource being created. In this case, it is a Deployment, which is used to manage stateless applications and ensure a specified number of replicas are running.
 
@@ -200,43 +214,45 @@ In the Dockerfile,
       labels:
         app: oracleapp1
     ```
-    
+
   Metadata provides information about the deployment:
-    * name: The name of the deployment is oracleapp1-deployment.  
-    * labels: This assigns a label app: oracleapp1 to the deployment, which is useful for selecting resources with the same label.
+  * name: The name of the deployment is oracleapp1-deployment.  
+  * labels: This assigns a label app: oracleapp1 to the deployment, which is useful for selecting resources with the same label.
 
 4. spec:
 
-    ```spec:```
-
-      ```replicas: 1  # You can change this if you want to scale```
-      
-      ```selector:```
-        ```matchLabels:```
-          ```app: oracleapp1```
+    ```yaml
+    spec:
+      replicas: 1  # You can change this if you want to scale
+      selector:
+        matchLabels:
+          app: oracleapp1
+    ```
 
   The spec section defines the specifications for the deployment:
-    * replicas: Specifies the number of identical pods to be running. It’s set to 1, meaning only one pod will be running, but you can scale it by changing this number.
-    * selector: Defines how the deployment will identify which pods to manage. In this case, it uses the label app: oracleapp1.
+  * replicas: Specifies the number of identical pods to be running. It’s set to 1, meaning only one pod will be running, but you can scale it by changing this number.
+  * selector: Defines how the deployment will identify which pods to manage. In this case, it uses the label app: oracleapp1.
 
 5. template:
-  
-    ```template:```
-      ```metadata:```
-        ```labels:```
-          ```app: oracleapp1```
-      ```spec:```
-        ```containers:```
-          ```- name: oracleapp1-container```
-            ```image: docker.io/library/oracle-app1:latest  # Replace with your image```
-            ```imagePullPolicy: Never```
-            ```ports:```
-              ```- containerPort: 9999  # Replace with your app's exposed port```
-            ```env:```
-              ```- name: LD_LIBRARY_PATH```
-                ```value: "/opt/oracle/instantclient_21_13"```
-              ```- name: PATH```
-                ```value: "/opt/oracle/instantclient_21_13:$PATH"```
+
+    ```yaml
+    template:
+      metadata:
+        labels:
+          app: oracleapp1
+      spec:
+        containers:
+          - name: oracleapp1-container
+            image: docker.io/library/oracle-app1:latest  # Replace with your image
+            imagePullPolicy: Never
+            ports:
+              - containerPort: 9999  # Replace with your app's exposed port
+            env:
+              - name: LD_LIBRARY_PATH
+                value: "/opt/oracle/instantclient_21_13"
+              - name: PATH
+                value: "/opt/oracle/instantclient_21_13:$PATH"
+    ```
 
   The template defines the pod template for the deployment:
   * metadata.labels: This ensures that the pods created by the deployment will also have the label 'app: oracleapp1'.
