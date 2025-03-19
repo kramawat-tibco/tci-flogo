@@ -81,6 +81,7 @@ b) To execute already deployed app in kuburnetes cluster.
 4. Apply updated deployment.yml file changes using below command:
   
     `kubectl apply -f deployment.yaml`
+
     Here above command tells Kubernetes to create or update resources based on the configurations defined in the deployment.yaml file.
 
 ![Create or update yaml file and verify pod is created](../../../import-screenshots/OracleDatabase/40.png)
@@ -92,11 +93,13 @@ b) To execute already deployed app in kuburnetes cluster.
 6. Check logs using below command:
     
     `kubectl logs <podname>`
+    
     eg: kubectl logs oracleapp-deployment-7889cff7-2fsjh
 
 7. Forward port to access your app locally on the same port using below command:
     
     `kubectl port-forward <podname> 9999:9999`
+    
     eg: kubectl port-forward oracleapp-deployment-7889cff7-2fsjh 9999:9999
 
 ![Port forward to 9999](../../../import-screenshots/OracleDatabase/41.png)
@@ -116,6 +119,7 @@ b) To execute already deployed app in kuburnetes cluster.
 10. You ca scale down the app using below command:
     
     `kubectl scale deploy <deployment-metadata-name> --replicas=0`
+    
     eg:kubectl scale deploy oracleapp1-deployment --replicas=0
 
 ![Sacle down app](../../../import-screenshots/OracleDatabase/44.png)
@@ -141,8 +145,11 @@ In the Dockerfile,
 
 3. Download and Install Oracle Instant Client:  
     ```WORKDIR /opt/oracle```
+
     ```RUN curl -O https://download.oracle.com/otn_software/linux/instantclient/2113000/instantclient-basic-linux.x64-21.13.0.0.0dbru.zip \```
+    
       ```&& unzip instantclient-basic-linux.x64-21.13.0.0.0dbru.zip \```
+    
       ```&& rm instantclient-basic-linux.x64-21.13.0.0.0dbru.zip```
     
     It downloads and installs Oracle Instant Client into /opt/oracle.
@@ -150,13 +157,16 @@ In the Dockerfile,
 
 4. Set Environment Variables:
   
-    ```ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_21_13" ENV PATH="/opt/oracle/instantclient_21_13:$PATH"```
+    ```ENV LD_LIBRARY_PATH="/opt/oracle/instantclient_21_13"```
+    
+    ```ENV PATH="/opt/oracle/instantclient_21_13:$PATH"```
 
     It Configures LD_LIBRARY_PATH and PATH to point to the Oracle Instant Client.
 
 5. Set Working Directory and Add Flogo App:
     
     ```WORKDIR /app```
+
     ```ADD oracleapp /app/flogoapp```
 
     Copies the application files from the host machine to the container.
@@ -184,11 +194,13 @@ In the Dockerfile,
 
 3. metadata:
     
-    ```metadata:```
-      ```name: oracleapp1-deployment```
-      ```labels:```
-        ```app: oracleapp1```
-
+    ```yaml
+    metadata:
+      name: oracleapp1-deployment
+      labels:
+        app: oracleapp1
+    ```
+    
   Metadata provides information about the deployment:
     * name: The name of the deployment is oracleapp1-deployment.  
     * labels: This assigns a label app: oracleapp1 to the deployment, which is useful for selecting resources with the same label.
@@ -196,7 +208,9 @@ In the Dockerfile,
 4. spec:
 
     ```spec:```
+
       ```replicas: 1  # You can change this if you want to scale```
+      
       ```selector:```
         ```matchLabels:```
           ```app: oracleapp1```
