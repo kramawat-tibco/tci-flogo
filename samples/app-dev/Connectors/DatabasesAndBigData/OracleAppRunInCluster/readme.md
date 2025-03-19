@@ -5,9 +5,10 @@
 
 This example demonstrates how we can deploy and run Oracle app in Docker and Kubernetes Cluster.
 Oracle app need runtime oracle client libraries to execute app. We have created Docker file which install those libraries. 
+
 The main purpose of this sample is:
-a) To deploy oracle app in Docker container and execute in the same.
-b) To execute already deployed app in kuburnetes cluster.
+* To deploy oracle app in Docker container and execute in the same.
+* To execute already deployed app in kuburnetes cluster.
 
 ## Prerequisites
 
@@ -25,7 +26,8 @@ b) To execute already deployed app in kuburnetes cluster.
     `docker build -t  oracle-app .`
 
     Here docker reads the Dockerfile to create an image and tags it with the name oracle-app.
-    Note: There is a dot (.) at the end of the command which is required as an argument.
+    
+    > **Note:** There is a dot (.) at the end of the command which is required as an argument.
 
     ![Build oracle app in docker](../../../import-screenshots/OracleDatabase/33.png)
 
