@@ -57,6 +57,8 @@ The main purpose of this sample is:
     
     `docker logs <<CONTAINER_ID>>`
 
+    > **eg:** docker logs 645562ba2fc3
+
     ![Oracle app logs](../../../import-screenshots/OracleDatabase/37.png)
 
 8. Check running container using below command:
@@ -96,13 +98,13 @@ The main purpose of this sample is:
     
     `kubectl logs <podname>`
     
-      eg: kubectl logs oracleapp-deployment-7889cff7-2fsjh
+      > **eg:** kubectl logs oracleapp-deployment-7889cff7-2fsjh
 
 7. Forward port to access your app locally on the same port using below command:
     
     `kubectl port-forward <podname> 9999:9999`
     
-      eg: kubectl port-forward oracleapp-deployment-7889cff7-2fsjh 9999:9999
+      > **eg:** kubectl port-forward oracleapp-deployment-7889cff7-2fsjh 9999:9999
 
     ![Port forward to 9999](../../../import-screenshots/OracleDatabase/41.png)
 
@@ -122,7 +124,7 @@ The main purpose of this sample is:
     
     `kubectl scale deploy <deployment-metadata-name> --replicas=0`
     
-      eg:kubectl scale deploy oracleapp1-deployment --replicas=0
+      > **eg:** kubectl scale deploy oracleapp1-deployment --replicas=0
 
     ![Sacle down app](../../../import-screenshots/OracleDatabase/44.png)
 
