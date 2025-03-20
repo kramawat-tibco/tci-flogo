@@ -12,12 +12,12 @@ The main purpose of this sample is:
 
 ## Prerequisites
 
-1. Ensure that docker and Minikube cluster is up and running. here will be using minikube as the local Kubernetes (K8s) cluster for deploying and managing applications.
+1. Ensure that docker and Minikube cluster is up and running. Here will be using minikube as the local Kubernetes (K8s) cluster for deploying and managing applications.
 3. In order to deploy and run Flogo Oracle DB app make sure Docker file, deployment.yml file and Flogo Oracle DB app binary should be present at same location.
 
 ## Deploy and Run Flogo Oracle DB app in a docker container
 
-1. Create a folder and place your Flogo Oracle DB app and Docker file in it.
+1. Create a folder and place your Flogo Oracle DB app binary and Docker file in it.
 
 2. Now open terminal from this location.
 
